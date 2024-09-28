@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Update teacher{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-sm-center" style="padding-top: 5%;padding-bottom: 5%;">
+    <div class="login-container">
+        <div class="row text-center">
+            <h1>Edit leraar</h1>
+        </div>
+        <br>  
+        <div class="container justify-content-center">
+            <form method="post">
+                <dt class="col-md-4 ">Gebruikersnaam:</dt>
+                <dd class="col-sm-9">{{ rows.username }}</dd>
+                <input name="username" type="text" class="form-control" aria-required="true">
+                <br>
+                <dt class="col-md-8">Verander wachtwoord:</dt>
+                <dd class="col-sm-9"></dd>
+                <input name="password" type="text" class="form-control" aria-required="true">
+                <br>
+                <dt class="col-md-8">Toon naam:</dt>
+                <dd class="col-sm-9">{{ rows.display_name }}</dd>
+                <input name="display_name" type="text" class="form-control" aria-required="true">
+                <br>
+                <dt class="col-md-8">Datum en tijd:</dt>
+                <dd class="col-sm-9">{{ rows.date_created }}</dd>
+                <br>
+                <div class="text-center">
+                    <button type="submit" id="go" class="btn btn-primary">Verander</button>
+                </div>
+            <form>
+        <br>
+        </div>
+        <div class="messagesbox">
+            {%  for message in get_flashed_messages() %}
+                <div class="alert alert-danger" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

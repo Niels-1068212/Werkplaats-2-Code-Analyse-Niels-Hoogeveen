@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Overview Admin{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+
+<div class="d-flex justify-content-sm-center" style="padding-top: 5%;padding-bottom: 5%;">
+    <div class="login-container">
+        <div class="row text-center">
+            <h1>Nieuwe leraar</h1>
+        </div>
+        <br>  
+        <div class="d-flex justify-content-center">
+            <form method="post">
+                <label for="username">Username:</label>
+                <input type="text" id="username" class="form-control" name="username" required><br>
+                <label for="display_name">Display name:</label>
+                <input type="text" id="display_name" class="form-control" name="display_name" required><br>
+                <label for="password">Password:</label>
+                <input type="password" id="password" class="form-control" name="password" required><br>
+                <input class="form-check-input" type="checkbox" name="is_admin" value="True" id="Check_is_admin">
+                <label class="form-check-label" for="Check_is_admin">Admin rechten</label>
+                <br></br>
+                <input type="submit" value="Maak aan" class="btn btn-primary">
+            <form>
+        <br><br>
+        </div>
+        <div class="messagesbox">
+            {%  for message in get_flashed_messages() %}
+                <div class="alert alert-danger" role="alert">{{ message }}</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

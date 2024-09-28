@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Update teacher{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-sm-center" style="padding-top: 5%;padding-bottom: 5%;">
+    <div class="login-container" style="width: 600px;">
+        <div class="row text-center">
+            <h1>Edit vraag</h1>
+        </div>
+        <br>  
+        <div class="container justify-content-center">
+            <form method="post">
+                <dt class="col-md-4">Vraag:</dt>
+                <textarea id="editquestion" name="editquestion" placeholder="Schrijf hier uw vraag" required class="form-control" rows="5" cols="{{ question.exam_question|length }}">{{ question.exam_question }}</textarea>
+                <br>
+                <dt class="col-md-8">Antwoord:</dt>
+                <textarea id="editanwser" name="editanwser" placeholder="Schrijf hier uw antwoord" required class="big-textarea" rows="8" cols="100">{{ question.exam_answer }}</textarea>
+                <br>
+                <div class="row">
+                    <div class="col-sm-5">
+                        <a class="btn btn-primary" href="/editquestion/{{ question.questions_id }}/open_answer">Generate open answer</a>
+                    </div>
+                    <div class="col-sm-7">
+                        <a class="btn btn-primary" href="/editquestion/{{ question.questions_id }}/multiple_choice_answer">Generate multiple choice answer</a>
+                    </div>
+                </div>
+                <br>
+                <p><i>Wacht een paar seconden op het genereren van het antwoord, het kan even duren.</i></p>
+                <br>
+                <dt class="col-md-8">Datum en tijd:</dt>
+                <dd class="col-sm-9">{{ question.date_created }}</dd>
+                <br>
+                <div class="row">
+                    <div class="col-md-3" style="margin-right: -30px;">
+                        <a class="btn btn-primary" href="/editnote/{{ question.note_id }}">
+                            Ga terug
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <form method="POST" action="/save">
+                            <button class="btn btn-primary" type="submit" style="background-color: #32a849; border-color: #32a849;">
+                                Opslaan  <i class="fa-regular fa-floppy-disk"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>    
+        <br>
+        </div>
+    </div>
+</div>
+{% endblock %}

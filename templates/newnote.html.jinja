@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Index{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<form method="POST">
+<div style="width: 400px;" class="container-sm">
+  <br>
+  <br>
+  <p class="h2">Nieuwe Notitie Aanmaken</p>
+  <br>
+  <div class="mb-3">
+    <label for="formtitle" class="form-label">Titel</label>
+    <input type="text" class="form-control" id="formtitle" name="formtitle" placeholder="Typ hier uw titel">
+  </div>
+  <div class="mb-3">
+    <label for="formnote" class="form-label">Notitie</label>
+    <textarea class="form-control" placeholder="Typ hier uw notitie" id="formnote" name="formnote" style="height: 100px" required></textarea>
+  </div>
+  <div class="mb-3">
+    <label for="formsource" class="form-label">Bron</label>
+    <input type="text" class="form-control" id="formsource" name="formsource" placeholder="Typ hier uw bron">
+  </div>
+  <div class="mb-3">
+    <label for="formcategoryid" class="form-label">Categorie</label>
+    <select class="form-select" id="formcategoryid" name="formcategoryid">
+      <option selected>Open this select menu</option>
+      {% for category in categories %}
+      <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
+      {% endfor %}  
+    </select>
+  </div>
+  <div class="form-check">
+    <input name="formpublic" class="form-check-input" type="checkbox" checked>
+    <label class="form-check-label" for="flexCheckChecked">
+      Openbaar
+    </label>
+  </div>
+  <br>
+  <button type="submit" id="go" class="btn btn-primary">Submit</button>
+  <br><br><br>
+</div>
+{% endblock %}

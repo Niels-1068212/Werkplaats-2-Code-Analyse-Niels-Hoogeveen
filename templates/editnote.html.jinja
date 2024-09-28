@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}View note{% endblock %}
+{% block head %}
+  {{ super() }}
+<script type="text/javascript">
+    function confirmDelete() {
+        return confirm('Weet je zeker dat je deze vraag wilt verwijderen?');
+    }
+</script>
+{% endblock %}
+{% block content %}
+<div id="center" class="container mt-5">
+  <form method="POST" action="/editnote/{{ notes.note_id }}">
+
+    <h1>
+      <input type="text" id="edittitle" value="{{ notes.title }}" name="edittitle" placeholder="Schrijf hier uw titel" required> 
+      <a style="float: right; margin-left: 10px; margin-top: 10px;" href="/viewnote/{{notes.note_id}}" class="btn btn-primary float-right">
+          <i class="fa-solid fa-xmark"></i>
+      </a>
+      <button style="float: right; margin-top: 10px;" class="btn btn-primary float-right" type="submit">
+        Opslaan <i class="fa-regular fa-floppy-disk"></i>
+        
+    </button>
+    </h1>
+  
+
+    <dl class="row">
+      <dt class="col-sm-3">Notitie:</dt>
+      <dd class="col-sm-9"><textarea rows="4" id="editnote" name="editnote" placeholder="Schrijf hier uw notitie" required class="form-control">{{ notes.note }}</textarea></dd>
+      
+      <dt class="col-sm-3">Bron:</dt>
+      <dd class="col-sm-9">
+        <input type="text" id="editsource" value="{{ notes.note_source }}" name="editsource" placeholder="Schrijf hier uw source" required class="form-control">
+      </dd>
+
+      <dt class="col-sm-3">Leraar:</dt>
+      <dd class="col-sm-9">{{ notes.display_name }}</dd>
+      
+      <dt class="col-sm-3 text-truncate">Categorie:</dt>
+      <dd class="col-sm-9">
+        <select id="editcategory" name="editcategory" class="form-select">
+          {% for category in categories %}
+            <option value="{{ category.category_id }}" {% if category.category_id == notes.category_id %}selected{% endif %}>
+              {{ category.omschrijving }}
+            </option>
+          {% endfor %}  
+        </select>
+      </dd>
+
+      <dt class="col-sm-3">Publiek:</dt>
+      <dd class="col-sm-9"><input name="is_public" type="checkbox" style="margin-left: -140px;" {% if notes.is_public %} checked {% endif %}></dd>
+    </dl>
+
+
+</form>
+<div class="mt-4">
+  <h3 style="font-weight: bold;">Toetsvragen:</h3>
+  {% if gen_que %}
+      
+      <ol>
+          {% for question in gen_que %}
+          <h4><li>Vraag:</li></h4>
+          <p>{{ question.exam_question }}</p>
+          <h5>Antwoord:</h5>
+          {% if question.exam_answer %}
+          <p>{{ question.exam_answer }}</p>
+          {% else %}
+          <p>Geen antwoord beschikbaar</p>
+          {% endif %}
+          <div class="row">
+            <div class="col-md-3" style="max-width: 118px; margin-right: -15px;">
+                <form method="POST" onsubmit="return confirmDelete();" action="/deletequestion/{{question.questions_id}}">
+                    <button type="submit" class="btn btn-danger float-left">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+            <div class="col-md-4">
+                <button class="btn btn-primary float-left" onclick="location.href='/editquestion/{{question.questions_id}}'" type="button">
+                    <i class="fa-solid fa-pen-to-square"></i> Edit
+                </button>
+            </div>
+        </div>        
+                 
+        
+      <br>
+          <br>
+          {% endfor %}
+          
+      </ol>
+  {% else %}
+      <p>Geen vragen beschikbaar.</p>
+  {% endif %}
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5">
+      <a class="btn btn-primary" href="{{ url_for('open_question', note_id=notes.note_id) }}">Generate open question</a>
+    </div>
+    <div class="col-sm-7">
+      <a class="btn btn-primary" href="{{ url_for('multiple_choice_question', note_id=notes.note_id) }}">Generate multiple choice question</a>
+    </div>
+  </div>
+  <br>
+  <p><i>Wacht een paar seconden op het genereren van de vraag en het antwoord, het kan even duren.</i></p>
+</div>
+</div>
+{% endblock %}

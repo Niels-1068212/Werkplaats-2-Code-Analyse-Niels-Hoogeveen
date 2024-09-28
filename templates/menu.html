@@ -1,0 +1,29 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light" id="TopNavBar">
+  <div class="container-fluid" style="padding-right: 10%; padding-left: 10%">
+    <a class="navbar-brand" href="#">
+      <img src="{{ url_for('static', filename='images/testcorrect-logo.svg') }}" alt="Logo" width="229" height="50" class="d-inline-block align-text-top">
+    </a>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a id="menu_button" href="/">Overzicht</a>
+        </li>
+        {% if g.user['is_admin'] == 1 %}
+        <li class="nav-item">
+          <a id="menu_button" href="/adminpanel">Admin</a>
+        </li>
+        {% endif %}
+        <li class="nav-item">
+          <a id="menu_button" href="/logout">Log uit</a>
+        </li>
+      </ul>
+      
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="menu_button_green" href="/newnote">Maak nieuwe notitie</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

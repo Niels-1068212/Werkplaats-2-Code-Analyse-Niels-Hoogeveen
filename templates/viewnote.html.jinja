@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block title %}View note{% endblock %}
+{% block head %}
+  {{ super() }}
+<Script>
+  function clickablelink(Source) {
+      if (/^https?:\/\//.test(Source)) {
+          document.write('<a href="' + Source + '">' + Source + '</a>');
+      } else {
+          document.write(Source);
+      }
+  }
+</Script>
+{% endblock %}
+{% block content %}
+<div id="center" class="container mt-5" >
+
+  <h1>{{ rows.title }}
+    <a style="float: right;" href="/editnote/{{rows.note_id}}" class="btn btn-primary float-right">
+      <i class="fa-solid fa-pen-to-square"></i>
+    </a>
+  </h1>
+
+    <dl class="row">
+      <dt class="col-sm-3">Notitie:</dt>
+        <dd class="col-sm-9">{{ rows.note }}</dd>
+
+      <dt class="col-sm-3">Bron:</dt>
+        <dd class="col-sm-9">
+          <p><script>
+            clickablelink("{{ rows.note_source }}");
+        </script></p>
+        </dd>
+
+      <dt class="col-sm-3">Leraar:</dt>
+        <dd class="col-sm-9">{{ rows.display_name }}</dd>
+
+      <dt class="col-sm-3 text-truncate">Categorie:</dt>
+        <dd class="col-sm-9">{{ rows.omschrijving }}</dd>
+
+      <dt class="col-sm-3 text-truncate">Publiek:</dt>
+        <dd class="col-sm-9">{% if rows.is_public == 1 %}Ja{% else %}Nee{% endif %}</dd>
+
+      <br>
+  </dl>
+<div class="mt-4">
+  <h3 style="font-weight: bold;">Toetsvragen:</h3>
+  {% if gen_que %}
+    <a href="/download_csv/{{ rows.note_id }}" class="btn btn-primary">Download als CSV</a>
+    <br></br>
+      <ol>
+          {% for question in gen_que %}
+          <h4><li>Vraag:</li></h4>
+          <p>{{ question.exam_question }}</p>
+          <h5>Antwoord:</h5>
+          {% if question.exam_answer %}
+          <p>{{ question.exam_answer }}</p>
+          {% else %}
+          <p>Geen antwoord beschikbaar</p>
+          {% endif %}
+      <br>
+          <br>
+          {% endfor %}
+          
+      </ol>
+  {% else %}
+      <p>Geen vragen beschikbaar.</p>
+  {% endif %}
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-sm-5">
+      <a class="btn btn-primary" href="{{ url_for('open_question', note_id=rows.note_id) }}">Generate open question</a>
+    </div>
+    <div class="col-sm-7">
+      <a class="btn btn-primary" href="{{ url_for('multiple_choice_question', note_id=rows.note_id) }}">Generate multiple choice question</a>
+    </div>
+  </div>
+  <br>
+  <p><i>Wacht een paar seconden op het genereren van de vraag en het antwoord, het kan even duren.</i></p>
+</div>
+</div>
+{% endblock %}
+

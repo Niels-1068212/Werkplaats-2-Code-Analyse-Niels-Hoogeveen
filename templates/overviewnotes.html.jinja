@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Overview Notes{% endblock %}
+{% block head %}
+  {{ super() }}
+  <script type="text/javascript">
+    function deleteNote(noteId) {
+        if (confirm("Weet je zeker dat je deze notitie wilt verwijderen?")) {
+            fetch(`/deletenote/${noteId}`, {
+                method: 'POST'
+            })
+        }
+    }
+</script>
+{% endblock %}
+{% block content %}
+ 
+<div class="container mt-4">
+    <br>
+    <h1>Welkom {{ g.user['display_name'] }}!</h1>
+    <br>
+    <div class="row">
+        <div class="col-md-4">
+        <form action="/" method="POST" class="d-flex">
+            <div class="input-group mb-3" >
+                <div class="form-floating">
+                    <select name="chosen_category" class="form-select" id="floatingSelect">
+                        <!-- The filter is empty-->
+                        {% if filters.category == "" %}
+                            <option value="">Geen filter</option>
+                            {% for category in categories %}
+                                <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
+                            {% endfor %}
+                        {% else %}
+
+                            <!-- Displays the current filter as the first option of the list -->
+                            {% for string in string_category %}
+                                {% if filters.category == string_category[string] %}
+                                    {% for category in categories %}
+                                        {% if string == category.category_id %}
+                                            <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+
+                            <!-- Displays the non-current filter in the list and in place of the current filter "no filter"  -->
+                            {% for string in string_category %}
+                                {% if filters.category == string_category[string] %}
+                                    {% for category in categories %}
+                                        {% if string != category.category_id %}
+                                            <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
+                                        {% else %}
+                                            <option value="">Geen filter</option>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                    <label for="floatingSelect">Categorie</label>
+                </div>    
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="input-group mb-3">
+                <div class="form-floating">
+                    <select name="questions" id="floatingSelect" class="form-select" style="display:block;">
+                        {% if filters.questions == "questions" %}
+                            <option value="questions">Heeft vragen</option>
+                            <option value="">Geen filter</option>
+                            <option value="no_questions">Geen vragen</option>
+                        {% elif filters.questions == "no_questions" %}
+                            <option value="no_questions">Geen vragen</option>
+                            <option value="">Geen filter</option>
+                            <option value="questions">Heeft vragen</option>
+                        {% else %}
+                            <option value="">Geen filter</option>
+                            <option value="questions">Heeft vragen</option>
+                            <option value="no_questions">Geen vragen</option>
+                        {% endif %}
+                    </select>
+                    <label for="floatingSelect">Vragen</label>
+                </div>    
+            </div>
+        </div>
+            <div class="col-md-4">
+                <div class="input-group mb-3" style="height: 58px;">
+                    {% if filters.search == ""%}
+                        <input id="searchbar" onkeyup="searchnotes()" type="text" name="search" class="form-control" placeholder="Zoek naar notities...">
+                    {% else %}
+                        <input id="searchbar" onkeyup="searchnotes()" type="text" name="search" class="form-control" placeholder="{{ filters.search }}">
+                    {% endif %}
+                </div>
+                
+            </div>
+            <div class="row">
+                <div class="col-md-3" style=" width: 230px;">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <button type="submit" name="clear_filter" value="True" class="btn btn-primary" style="background-color: red; border-color: red;">Verwijder filter</button>
+                </div>
+                <div class="col-md-3"  style="padding-top: 6px;">
+                    {% if filters.all_teachers == True %}
+                    <input class="form-check-input" type="checkbox" name="all_teachers" value="True" id="Check_all_public" checked>
+                    {% else %}
+                    <input class="form-check-input" type="checkbox" name="all_teachers" value="True" id="Check_all_public">
+                    {% endif %}
+                    <label class="form-check-label" for="Check_all_public">
+                        Laat alle openbare notities zien
+                    </label>
+                </div>
+            </div>            
+    </div>
+
+
+    <div class="container mt-4">
+        <table id="notesdisplay" class="table table-striped">
+        <table id="notesdisplay" class="table table-striped table-hover">
+            <thead>
+            <tr>
+                <td class="table-primary"><strong>Titel</strong></td>
+                <td class="table-primary"><strong>Notitie</strong></td>
+                <td class="table-primary"><strong>Bron</strong></td>
+                <td class="table-primary"><strong>Categorie</strong></td>
+                <td class="table-primary"><strong>Vragen</strong></td>
+                <td class="table-primary"><strong>Leraar</strong></td>
+                <td class="table-primary"><strong>Datum</strong></td>
+            </tr>
+            </thead>
+            {% for data_note in data_notes %}
+                <tr id="tablerow">
+                    <td><a style="color: #044cf4; text-decoration: underline;" href="{{ url_for('viewnote', note_id=data_note.note_id) }}">{{ data_note.title }}</a></td>
+                    <td>{{ data_note.note }}</td>   
+                    <td>{{ data_note.note_source }}</td>
+                    <td>
+                        {{ data_note.omschrijving.split()[:50]|join(' ') }}{% if data_note.omschrijving.split()|length > 50 %}...{% endif %}
+                    </td>                                                               
+                    <td>{{ data_note.question }}</td>
+                    <td>{{ data_note.display_name }}</td>
+                    <td>{{ data_note.date_created }}</td>  
+                    <td>{{ data_note.is_public }}</td>
+
+                    <td><button onclick="location.href='/editnote/{{ data_note.note_id }}'" type="button"><i class="fa-solid fa-pen-to-square"></i></button></td>
+                
+                    <td><button onclick="deleteNote('{{ data_note.note_id }}')"><i class="fa-solid fa-trash"></i></button></td>
+                </tr>
+            {% else %}
+                    <h3>Geen notities gevonden</h3>
+            {% endfor %}
+        </table>
+    </div>
+    {% if total_pages != 0%}
+    <a class="btn btn-primary" style="margin-top: 20px; margin-left: 20px;" href="/download_csv">Download CSV</a>
+    <div class="container mt-4 text-center">
+        <form method="post" class="notes_page_nav">
+            {% if (page == 1) and (total_pages <= 1) %}
+            <div class="row">
+                <div class="col-auto me-auto">
+                    <button class="btn btn-outline-secondary" name="back" type="submit" value="-1" disabled> < </button>
+                </div>
+                <div class="col">
+                    <p style="font-family: Nunito, sans-serif">{{ page }}</p>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary" name="forward" type="submit" value="+1" disabled> > </button>
+                </div>
+            </div>
+            {% elif page == 1 %}
+            <div class="row">
+                <div class="col-auto me-auto">
+                    <button class="btn btn-outline-secondary" name="back" type="submit" value="-1" disabled> < </button>
+                 </div>
+                 <div class="col">
+                    <p style="font-family: Nunito, sans-serif">{{ page }}</p>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" name="forward" type="submit" value="+1"> > </button>
+                </div>
+            </div>
+            {% elif page==total_pages %}
+            <div class="row">
+                <div class="col-auto me-auto">
+                    <button class="btn btn-primary" name="back" type="submit" value="-1"> < </button>
+                </div>
+                <div class="col">
+                    <p style="font-family: Nunito, sans-serif">{{ page }}</p>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-outline-secondary" name="forward" type="submit" value="+1" disabled> > </button>
+                </div>
+            </div>
+            {% elif (page != 1) and (page != total_pages) %}
+            <div class="row">
+                <div class="col-auto me-auto">
+                    <button class="btn btn-primary" name="back" type="submit" value="-1"> < </button>
+                </div>
+                <div class="col">
+                    <p style="font-family: Nunito, sans-serif">{{ page }}</p>
+                </div>
+                <div class="col-auto">
+                    <button class="btn btn-primary" name="forward" type="submit" value="+1"> > </button>
+                </div>
+            </div>
+            {% endif %}
+        </form>
+
+    </div>
+    {% endif %}  
+
+</div>
+{% endblock %}
