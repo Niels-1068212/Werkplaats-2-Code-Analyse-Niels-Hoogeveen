@@ -13,7 +13,7 @@
 </script>
 {% endblock %}
 {% block content %}
- 
+
 <div class="container mt-4">
     <br>
     <h1>Welkom {{ g.user['display_name'] }}!</h1>
@@ -21,20 +21,19 @@
     <div class="row">
         <div class="col-md-4">
         <form action="/" method="POST" class="d-flex">
-            <div class="input-group mb-3" >
+            <div class="input-group mb-3">
                 <div class="form-floating">
                     <select name="chosen_category" class="form-select" id="floatingSelect">
-                        <!-- The filter is empty-->
-                        {% if filters.category == "" %}
+                        <!-- Check if 'filters' and 'category' are defined -->
+                        {% if filters is defined and filters.category == "" %}
                             <option value="">Geen filter</option>
                             {% for category in categories %}
                                 <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
                             {% endfor %}
                         {% else %}
-
                             <!-- Displays the current filter as the first option of the list -->
                             {% for string in string_category %}
-                                {% if filters.category == string_category[string] %}
+                                {% if filters is defined and filters.category == string_category[string] %}
                                     {% for category in categories %}
                                         {% if string == category.category_id %}
                                             <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
@@ -45,7 +44,7 @@
 
                             <!-- Displays the non-current filter in the list and in place of the current filter "no filter"  -->
                             {% for string in string_category %}
-                                {% if filters.category == string_category[string] %}
+                                {% if filters is defined and filters.category == string_category[string] %}
                                     {% for category in categories %}
                                         {% if string != category.category_id %}
                                             <option value="{{ category.category_id }}">{{ category.omschrijving }}</option>
@@ -65,11 +64,11 @@
             <div class="input-group mb-3">
                 <div class="form-floating">
                     <select name="questions" id="floatingSelect" class="form-select" style="display:block;">
-                        {% if filters.questions == "questions" %}
+                        {% if filters is defined and filters.questions == "questions" %}
                             <option value="questions">Heeft vragen</option>
                             <option value="">Geen filter</option>
                             <option value="no_questions">Geen vragen</option>
-                        {% elif filters.questions == "no_questions" %}
+                        {% elif filters is defined and filters.questions == "no_questions" %}
                             <option value="no_questions">Geen vragen</option>
                             <option value="">Geen filter</option>
                             <option value="questions">Heeft vragen</option>
@@ -85,21 +84,20 @@
         </div>
             <div class="col-md-4">
                 <div class="input-group mb-3" style="height: 58px;">
-                    {% if filters.search == ""%}
-                        <input id="searchbar" onkeyup="searchnotes()" type="text" name="search" class="form-control" placeholder="Zoek naar notities...">
-                    {% else %}
+                    {% if filters is defined and filters.search != "" %}
                         <input id="searchbar" onkeyup="searchnotes()" type="text" name="search" class="form-control" placeholder="{{ filters.search }}">
+                    {% else %}
+                        <input id="searchbar" onkeyup="searchnotes()" type="text" name="search" class="form-control" placeholder="Zoek naar notities...">
                     {% endif %}
                 </div>
-                
             </div>
             <div class="row">
                 <div class="col-md-3" style=" width: 230px;">
                     <button type="submit" class="btn btn-primary">Filter</button>
                     <button type="submit" name="clear_filter" value="True" class="btn btn-primary" style="background-color: red; border-color: red;">Verwijder filter</button>
                 </div>
-                <div class="col-md-3"  style="padding-top: 6px;">
-                    {% if filters.all_teachers == True %}
+                <div class="col-md-3" style="padding-top: 6px;">
+                    {% if filters is defined and filters.all_teachers %}
                     <input class="form-check-input" type="checkbox" name="all_teachers" value="True" id="Check_all_public" checked>
                     {% else %}
                     <input class="form-check-input" type="checkbox" name="all_teachers" value="True" id="Check_all_public">
@@ -111,9 +109,7 @@
             </div>            
     </div>
 
-
     <div class="container mt-4">
-        <table id="notesdisplay" class="table table-striped">
         <table id="notesdisplay" class="table table-striped table-hover">
             <thead>
             <tr>
@@ -126,6 +122,7 @@
                 <td class="table-primary"><strong>Datum</strong></td>
             </tr>
             </thead>
+            <tbody>
             {% for data_note in data_notes %}
                 <tr id="tablerow">
                     <td><a style="color: #044cf4; text-decoration: underline;" href="{{ url_for('viewnote', note_id=data_note.note_id) }}">{{ data_note.title }}</a></td>
@@ -144,11 +141,14 @@
                     <td><button onclick="deleteNote('{{ data_note.note_id }}')"><i class="fa-solid fa-trash"></i></button></td>
                 </tr>
             {% else %}
-                    <h3>Geen notities gevonden</h3>
+                <tr>
+                    <td colspan="7" class="text-center"><h3>Geen notities gevonden</h3></td>
+                </tr>
             {% endfor %}
+            </tbody>
         </table>
     </div>
-    {% if total_pages != 0%}
+    {% if total_pages != 0 %}
     <a class="btn btn-primary" style="margin-top: 20px; margin-left: 20px;" href="/download_csv">Download CSV</a>
     <div class="container mt-4 text-center">
         <form method="post" class="notes_page_nav">
@@ -176,7 +176,7 @@
                     <button class="btn btn-primary" name="forward" type="submit" value="+1"> > </button>
                 </div>
             </div>
-            {% elif page==total_pages %}
+            {% elif page == total_pages %}
             <div class="row">
                 <div class="col-auto me-auto">
                     <button class="btn btn-primary" name="back" type="submit" value="-1"> < </button>
@@ -202,9 +202,7 @@
             </div>
             {% endif %}
         </form>
-
     </div>
     {% endif %}  
-
 </div>
 {% endblock %}
